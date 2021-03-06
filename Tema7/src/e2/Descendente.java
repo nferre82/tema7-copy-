@@ -131,6 +131,10 @@ public class Descendente {
 		dis.close();
 	}
 	
+	public void copiarFichero() {
+		
+	}
+	
 	public static void main(String[] args) throws IOException {
 		Descendente d1=new Descendente(40);
 		d1.aniadeNum((float)3.444);
