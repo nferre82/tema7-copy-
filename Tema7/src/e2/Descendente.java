@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Descendente {
 
@@ -17,7 +18,7 @@ public class Descendente {
 		total=0;
 	}
 	
-	public boolean aniadeNum(int num) {
+	public boolean aniadeNum(float num) {
 		if (total==n.length) {
 			return false;
 		}
@@ -67,21 +68,42 @@ public class Descendente {
 	}
 	
 	public void aniadeNumsRandom(int limInf, int limSup, int cant, String nomFich) throws IOException {
-		DataOutputStream dos=new DataOutputStream(new FileOutputStream(nomFich));
 		DataInputStream dis=new DataInputStream(new FileInputStream(nomFich));
-		n=new float[dis.available()+cant];
+		int nums=dis.available()/Float.BYTES;
+		n=new float[nums];	
+		total=0;
+		Float num;
 		while (dis.available()>0) {
-			aniadeNum(dis.read());
-		}	
-		for (int i = 0; i < total; i++) {
-			int num=(int) (limInf+Math.random()*(limInf+limSup+1));
+			num=dis.readFloat();
 			aniadeNum(num);
-			aniadeNumsArray(nomFich);
+			borrarDuplicados();
 		}
-		borrarDuplicados();
+		float m1[]=n;
+		dis.close();
+		DataOutputStream dos=new DataOutputStream(new FileOutputStream(nomFich));
+		total=0;
+		n=new float[cant-nums];
+		while(total<cant-nums) {
+			num=(float) (limInf+Math.random()*(limSup-limInf));
+			borrarDuplicados();
+			aniadeNum(num);
+		}
+		float m2[]=n;
+		n=new float[m1.length+m2.length];
+		int cont=0;
+		while (cont<m1.length) {
+			n[cont]=m1[cont];
+			cont++;
+		}
+		int cont2=0;
+		while (cont<n.length) {
+			n[cont]=m2[cont2];
+			cont++;
+			cont2++;
+		}
+		total=n.length;
 		aniadeNumsArray(nomFich);
 		dos.close();
-		dis.close();
 	}
 	
 	public boolean buscarEnFichero(String nomFich, int p) throws IOException {
@@ -105,13 +127,13 @@ public class Descendente {
 			System.out.print(n+" | ");
 			n=dis.readFloat();
 		}
-		
+		System.out.print(n+" | ");
 		dis.close();
 	}
 	
 	public static void main(String[] args) throws IOException {
 		Descendente d1=new Descendente(40);
-		d1.aniadeNum(3);
+		d1.aniadeNum((float)3.444);
 		d1.aniadeNum(7);
 		d1.aniadeNum(5);
 		d1.aniadeNum(4);
@@ -120,11 +142,15 @@ public class Descendente {
 		d1.borrarDuplicados();
 		d1.ver();
 		d1.aniadeNumsArray("num1.bin");
+		d1.verFichero("num1.bin");
 		d1.aniadeNumsArray("num2.bin");
-		d1.aniadeNumsRandom(10, 20, 20, "num2.bin");
-		System.out.println(d1.buscarEnFichero("num2.bin", 20));
+		d1.aniadeNumsRandom(10, 20, 15, "num2.bin");
+		System.out.println();
+		System.out.println(d1.buscarEnFichero("num2.bin", 2));
 		d1.buscarEnFichero("num2.bin", 5);
 		d1.verFichero("num2.bin");
+		System.out.println();
+		d1.buscarEnFichero("num2.bin", 20);
 		
 	}
 	
