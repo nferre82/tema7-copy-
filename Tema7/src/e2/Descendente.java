@@ -131,8 +131,33 @@ public class Descendente {
 		dis.close();
 	}
 	
-	public void copiarFichero() {
-		
+	public boolean copiarFichero(String nomFichOr, String nomFichDes) throws IOException {
+		DataInputStream disDes=new DataInputStream(new FileInputStream(nomFichDes));
+		char resp=' ';
+		if (disDes.available()>0) {
+			System.out.println("El fichero ya existe, desea sobreescribir(s), añadir(a) o no hacer nada(n)?");
+			resp=Consola.leeChar();
+		}
+		disDes.close();
+		if (resp=='n') {
+			return false;
+		}
+		DataInputStream dis=new DataInputStream(new FileInputStream(nomFichOr));
+		DataOutputStream dos=new DataOutputStream(new FileOutputStream(nomFichDes));
+		n=new float[dis.available()/Float.BYTES];
+		if (resp=='s') {
+			while (dis.available()>0) {
+				int num=(int) dis.readFloat();
+				if (num%2==1) {
+					System.out.println(num);
+					aniadeNum(num);
+				}
+			}
+		}
+		aniadeNumsArray(nomFichDes);
+		dos.close();
+		dis.close();
+		return true;
 		
 	}
 	
@@ -156,6 +181,9 @@ public class Descendente {
 		d1.verFichero("num2.bin");
 		System.out.println();
 		d1.buscarEnFichero("num2.bin", 20);
+		
+		d1.copiarFichero("num2.bin", "num1.bin");
+		d1.verFichero("num1.bin");
 		
 	}
 	
