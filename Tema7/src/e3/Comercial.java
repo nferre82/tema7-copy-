@@ -1,6 +1,8 @@
 package e3;
 
-public class Comercial {
+import java.io.Serializable;
+
+public class Comercial implements Serializable{
 
 	private String nombre;
 	private int salario;
@@ -13,8 +15,11 @@ public class Comercial {
 	}
 	
 	public void ver() {
-		System.out.println("Nombre: "+nombre+", salario: "+salario+", movil: ");
-		movil.ver();
+		System.out.println("Nombre: "+nombre+", salario: "+salario);
+		if (movil!=null) {
+			System.out.println(", movil: ");
+			movil.ver();
+		}
 	}
 	
 	public void trabajar() {
@@ -26,4 +31,20 @@ public class Comercial {
 		salario+=g;
 		movil.llamar(m);
 	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public TelefonoMovil getMovil() {
+		return movil;
+	}
+
+	public void setMovil(TelefonoMovil movil) {
+		this.movil = movil;
+	}
+	
+	
+	
+	
 }
