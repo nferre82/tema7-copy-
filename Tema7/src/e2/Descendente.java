@@ -133,7 +133,7 @@ public class Descendente {
 	
 	public void copiarFichero(String nomFichOr, String nomFichDes) throws IOException {
 		DataInputStream disDes=new DataInputStream(new FileInputStream(nomFichDes));
-		char resp=' ';
+		char resp='s';
 		if (disDes.available()>0) {
 			System.out.println("El fichero ya existe, desea sobreescribir(s), añadir(a) o no hacer nada(n)?");
 			resp=Consola.leeChar();
