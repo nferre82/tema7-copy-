@@ -131,33 +131,53 @@ public class Descendente {
 		dis.close();
 	}
 	
-	public boolean copiarFichero(String nomFichOr, String nomFichDes) throws IOException {
+	public void copiarFichero(String nomFichOr, String nomFichDes) throws IOException {
 		DataInputStream disDes=new DataInputStream(new FileInputStream(nomFichDes));
 		char resp=' ';
 		if (disDes.available()>0) {
 			System.out.println("El fichero ya existe, desea sobreescribir(s), añadir(a) o no hacer nada(n)?");
 			resp=Consola.leeChar();
 		}
-		disDes.close();
-		if (resp=='n') {
-			return false;
-		}
 		DataInputStream dis=new DataInputStream(new FileInputStream(nomFichOr));
-		DataOutputStream dos=new DataOutputStream(new FileOutputStream(nomFichDes));
-		n=new float[dis.available()/Float.BYTES];
-		if (resp=='s') {
-			while (dis.available()>0) {
-				int num=(int) dis.readFloat();
-				if (num%2==1) {
-					System.out.println(num);
-					aniadeNum(num);
+		switch (resp) {
+			case 's':
+				n=new float[dis.available()/Float.BYTES];
+				total=0;
+				while (dis.available()>0) {
+					int num=(int) Math.round(dis.readFloat());
+					if (num%2==1) {
+						aniadeNum(num);
+						borrarDuplicados();
+					}
 				}
-			}
+				aniadeNumsArray(nomFichDes);
+			break;
+				
+			case 'a':
+				n=new float[disDes.available()/Float.BYTES+dis.available()/Float.BYTES];
+				total=0;		
+				int num;
+				disDes=new DataInputStream(new FileInputStream(nomFichDes));
+				while (disDes.available()/Float.BYTES>0) {
+					num=(int) disDes.readFloat();
+					aniadeNum(num);
+					borrarDuplicados();
+				}
+				disDes.close();
+				while (dis.available()>0) {
+					num=(int) dis.readFloat();
+					if (num%2==1) {
+						aniadeNum(num);
+						borrarDuplicados();
+					}
+				}
+				aniadeNumsArray(nomFichDes);
+				dis.close();
+			break;
 		}
-		aniadeNumsArray(nomFichDes);
-		dos.close();
+		
+		disDes.close();
 		dis.close();
-		return true;
 		
 	}
 	
@@ -178,10 +198,15 @@ public class Descendente {
 		System.out.println();
 		System.out.println(d1.buscarEnFichero("num2.bin", 2));
 		d1.buscarEnFichero("num2.bin", 5);
-		d1.verFichero("num2.bin");
 		System.out.println();
 		d1.buscarEnFichero("num2.bin", 20);
-		
+		System.out.println();
+		System.out.println();
+		d1.verFichero("num1.bin");
+		System.out.println();
+		d1.verFichero("num2.bin");
+		System.out.println();
+		System.out.println();
 		d1.copiarFichero("num2.bin", "num1.bin");
 		d1.verFichero("num1.bin");
 		
