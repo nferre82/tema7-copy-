@@ -1,6 +1,8 @@
-package e3;
+package e3cambio;
 
-public class TelefonoMovil {
+import java.io.Serializable;
+
+public class TelefonoMovil implements Serializable{
 
 	private int numero, saldo;
 
@@ -20,5 +22,14 @@ public class TelefonoMovil {
 	
 	public void llamar(int minutos) {
 		saldo-=minutos*2;
+		if (saldo<=0) {
+			saldo=0;
+		}
 	}
+
+	public int getSaldo() {
+		return saldo;
+	}
+	
+	
 }

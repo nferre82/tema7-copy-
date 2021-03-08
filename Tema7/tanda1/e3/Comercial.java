@@ -8,28 +8,33 @@ public class Comercial implements Serializable{
 	private int salario;
 	private TelefonoMovil movil;
 	
-	public Comercial(String nombre, int salario) {
-		super();
+	public Comercial(String nombre, int salario, TelefonoMovil movil) {
 		this.nombre = nombre;
 		this.salario = salario;
+		this.movil = movil;
 	}
-	
+
 	public void ver() {
-		System.out.println("Nombre: "+nombre+", salario: "+salario);
+		System.out.print("Nombre: "+nombre+", salario: "+salario);
 		if (movil!=null) {
-			System.out.println(", movil: ");
+			System.out.print(", movil: ");
 			movil.ver();
 		}
 	}
 	
 	public void trabajar() {
-		salario+=10;
-		movil.llamar(15);
+		if (movil.getSaldo()>=15) {
+			salario+=10;
+			movil.llamar(15);
+		}
+		
 	}
 	
 	public void trabajar(int g, int m) {
-		salario+=g;
-		movil.llamar(m);
+		if (movil.getSaldo()>=m*2) {
+			salario+=g;
+			movil.llamar(m);
+		}
 	}
 
 	public String getNombre() {
