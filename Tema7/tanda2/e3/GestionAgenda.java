@@ -94,7 +94,7 @@ public class GestionAgenda {
 		String linea=br.readLine();
 		int cantidad;
 		while (linea!=null) {
-			String[] persona=linea.split("/t");
+			String[] persona=linea.split("\t");
 			int edad1=Integer.parseInt(persona[1]);
 			if (cant.containsKey(edad1)) {
 				cantidad=cant.get(edad1);
@@ -107,6 +107,7 @@ public class GestionAgenda {
 				cant.put(edad1, 1);
 			}
 			cantidad=0;
+			linea=br.readLine();
 		}
 		br.close();
 		Iterator<Integer> it=cant.keySet().iterator();
@@ -125,8 +126,16 @@ public class GestionAgenda {
 		Persona p=new Persona("Javi", "661685247", "Madrid", "40");
 		System.out.println();
 		g.aniadePersona(p);
+		g.aniadePersona(p);
 		g.ver();
 		System.out.println();
 		System.out.println(g.buscarPersona("Javi"));
+		System.out.println();
+		g.aniadePersonaChecked(p);
+		g.eliminaPersona(p);
+		g.ver();
+		System.out.println();
+		System.out.println(g.edadMasFrecuente());
+		
 	}
 }
