@@ -7,8 +7,9 @@ import java.io.IOException;
 public class E1 {
 
 	public static void copiarImagen(String nomFich) throws IOException {
-		FileInputStream fis=new FileInputStream(nomFich+".jpg");
-		FileOutputStream fos=new FileOutputStream(nomFich+"_CPY.jpg");
+		String[] nombre=nomFich.split("\\.");
+		FileInputStream fis=new FileInputStream(nomFich);
+		FileOutputStream fos=new FileOutputStream(nombre[0]+"_CPY."+nombre[1]);
 		while (fis.available()>0) {
 			fos.write(fis.read());
 		}
@@ -19,35 +20,32 @@ public class E1 {
 	public static void copiarBloques(String nomFich) throws IOException {
 		final int N=512;
 		byte arr[]=new byte[N];
-		FileInputStream fis=new FileInputStream(nomFich+".jpg");
-		FileOutputStream fos=new FileOutputStream(nomFich+"_CPY2.jpg");
+		String[] nombre=nomFich.split("\\.");
+		FileInputStream fis=new FileInputStream(nomFich);
+		FileOutputStream fos=new FileOutputStream(nombre[0]+"_CPY2."+nombre[1]);
 		while (fis.available()>0) {
-			fis.read(arr);
-			fos.write(arr);
-			if (fis.available()<N) {
-				arr=new byte[fis.available()];
-			}
+			int numero=fis.read(arr);
+			fos.write(arr,0,numero);
 		}
 		fis.close();
 		fos.close();
 	}
 	
 	public static void copiarDeUna(String nomFich) throws IOException {
-		FileInputStream fis=new FileInputStream(nomFich+".jpg");
-		FileOutputStream fos=new FileOutputStream(nomFich+"_CPY3.jpg");
+		String[] nombre=nomFich.split("\\.");
+		FileInputStream fis=new FileInputStream(nomFich);
+		FileOutputStream fos=new FileOutputStream(nombre[0]+"_CPY3."+nombre[1]);
 		byte arr[]=new byte[fis.available()];
-		while (fis.available()>0) {
-			fis.read(arr);
-			fos.write(arr);
-		}
+		fis.read(arr);
+		fos.write(arr);
 		fis.close();
 		fos.close();
 	}
 	
 	public static void main(String[] args) throws IOException {
-		copiarImagen("img/img");
-		copiarBloques("img/img");
-		copiarDeUna("img/img");
+		copiarImagen("img/img.jpg");
+		copiarBloques("img/img.jpg");
+		copiarDeUna("img/img.jpg");
 	}
 	
 }
