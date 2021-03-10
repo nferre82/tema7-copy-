@@ -50,9 +50,10 @@ public class VisitasDia implements Serializable{
 		ver();
 	}
 	
-	public void verFichero(String fichero) {
+	public void verFichero(String fichero) throws IOException, ClassNotFoundException{
 		ObjectInputStream ois=new ObjectInputStream(new FileInputStream(fichero));
-
+		ArrayList<Visita> arr=(ArrayList<Visita>) ois.readObject();
+		
 		ois.close();
 	}
 	
