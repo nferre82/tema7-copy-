@@ -22,7 +22,12 @@ public class Descendente {
 		if (total==n.length) {
 			return false;
 		}
-		for (int i = 0; i <= total ; i++) {
+		if (total==0) {
+			n[0]=num;
+			total++;
+			return true;
+		}
+		for (int i = 0; i < total ; i++) {
 			if (n[i]<num) {
 				for (int j = total; j > i; j--) {
 					n[j]=n[j-1];
@@ -68,19 +73,9 @@ public class Descendente {
 	}
 	
 	public void aniadeNumsRandom(int limInf, int limSup, int cant, String nomFich) throws IOException {
-		DataInputStream dis=new DataInputStream(new FileInputStream(nomFich));
-		int nums=dis.available()/Float.BYTES;
-		n=new float[nums];	
-		total=0;
+		int nums=Float.BYTES;
 		Float num;
-		while (dis.available()>0) {
-			num=dis.readFloat();
-			aniadeNum(num);
-			borrarDuplicados();
-		}
-		float m1[]=n;
-		dis.close();
-		DataOutputStream dos=new DataOutputStream(new FileOutputStream(nomFich));
+		DataOutputStream dos=new DataOutputStream(new FileOutputStream(nomFich,true));
 		total=0;
 		n=new float[cant-nums];
 		while(total<cant-nums) {
@@ -89,12 +84,8 @@ public class Descendente {
 			aniadeNum(num);
 		}
 		float m2[]=n;
-		n=new float[m1.length+m2.length];
+		n=new float[m2.length];
 		int cont=0;
-		while (cont<m1.length) {
-			n[cont]=m1[cont];
-			cont++;
-		}
 		int cont2=0;
 		while (cont<n.length) {
 			n[cont]=m2[cont2];
@@ -183,9 +174,10 @@ public class Descendente {
 	
 	public static void main(String[] args) throws IOException {
 		Descendente d1=new Descendente(40);
+		d1.aniadeNum(-7);
 		d1.aniadeNum((float)3.444);
 		d1.aniadeNum(7);
-		d1.aniadeNum(5);
+		d1.aniadeNum(-5);
 		d1.aniadeNum(4);
 		d1.aniadeNum(4);
 		d1.ver();
@@ -193,23 +185,15 @@ public class Descendente {
 		d1.ver();
 		d1.aniadeNumsArray("num1.bin");
 		d1.verFichero("num1.bin");
+		System.out.println();
+		System.out.println("num2");
 		d1.aniadeNumsArray("num2.bin");
-		d1.aniadeNumsRandom(10, 20, 15, "num2.bin");
-		System.out.println();
-		System.out.println(d1.buscarEnFichero("num2.bin", 2));
-		d1.buscarEnFichero("num2.bin", 5);
-		System.out.println();
-		d1.buscarEnFichero("num2.bin", 20);
-		System.out.println();
-		System.out.println();
-		d1.verFichero("num1.bin");
-		System.out.println();
 		d1.verFichero("num2.bin");
 		System.out.println();
+		d1.aniadeNumsRandom(10, 20, 15, "num2.bin");
 		System.out.println();
-		d1.copiarFichero("num2.bin", "num1.bin");
-		d1.verFichero("num1.bin");
-		
+		d1.verFichero("num2.bin");
+
 	}
 	
 }

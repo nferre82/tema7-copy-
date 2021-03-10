@@ -7,5 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="tanda1"/>
 	<classpathentry kind="src" path="tanda2"/>
+	<classpathentry kind="src" path="tenda3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
