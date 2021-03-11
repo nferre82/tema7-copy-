@@ -1,7 +1,13 @@
 package museo;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Visita implements Serializable{
 
@@ -9,18 +15,78 @@ public class Visita implements Serializable{
 	private int cantidad;
 	private int hora[];//[0]hora,[1]minutos
 	
-	public Visita(String nombre, int cantidad, int hora, int minutos) {
+	
+	public Visita(String nombre, int cantidad, int hora, int minutos) throws IOException {
 		this.nombre = nombre;
 		this.cantidad = cantidad;
-		if (hora>24 || hora<0) {
-			System.out.println("Hora incorrecta. Nueva hora=10");
-			hora=10;
+		if (horaBuena(hora, minutos)) {
+			this.hora = new int[] {hora, minutos};
+		} else {
+			primeraHora();
 		}
-		if (minutos>60 || minutos<0) {
-			System.out.println("Minutos incorrectos. Nuevos minutos=0");
-			minutos=0;
+	}
+	
+	public void primeraHora() throws IOException {
+		BufferedReader br=new BufferedReader(new FileReader("tiempos_visita.txt"));
+		String linea=br.readLine();
+		String separado[]=linea.split("\t");
+		int horaBuena=Integer.parseInt(separado[0]);
+		int minutosBuena=Integer.parseInt(separado[1]);
+		this.hora = new int[] {horaBuena, minutosBuena};
+		br.close();
+	}
+	
+	public boolean horaBuena(int hora, int minutos) throws IOException {
+		BufferedReader br=new BufferedReader(new FileReader("tiempos_visita.txt"));
+		String linea=br.readLine();
+		while (linea!=null) {
+			String separado[]=linea.split("\t");
+			int horaBuena=Integer.parseInt(separado[0]);
+			int minutosBuena=Integer.parseInt(separado[1]);
+			if (horaBuena==hora && minutosBuena==minutos) {
+				br.close();
+				return true;
+			}
+			linea=br.readLine();
 		}
-		this.hora = new int[] {hora, minutos};
+		br.close();
+		return false;
+	}
+	
+	public boolean horaMax50(int horas[]) {
+		if (hora==null) {
+			return false;
+		}
+		if (hora[0]==horas[0] && hora[1]==horas[1]) {
+			return true;
+		}
+		return false;
+	}
+	
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public void setHora(int[] hora) throws IOException {
+		if (horaBuena(hora[0], hora[1])) {
+			this.hora = new int[] {hora[0], hora[1]};
+		} else {
+			primeraHora();
+		}
+	}
+
+	
+	public String getNombre() {
+		return nombre;
+	}
+
+	public int[] getHora() {
+		return hora;
 	}
 
 	@Override
