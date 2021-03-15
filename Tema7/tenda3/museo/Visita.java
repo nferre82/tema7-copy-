@@ -1,13 +1,9 @@
 package museo;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
 
 public class Visita implements Serializable{
 
@@ -36,7 +32,7 @@ public class Visita implements Serializable{
 		br.close();
 	}
 	
-	public boolean horaBuena(int hora, int minutos) throws IOException {
+	public static boolean horaBuena(int hora, int minutos) throws IOException {
 		BufferedReader br=new BufferedReader(new FileReader("tiempos_visita.txt"));
 		String linea=br.readLine();
 		while (linea!=null) {
