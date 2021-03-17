@@ -2,6 +2,7 @@ package museo;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,26 +25,26 @@ public class VisitasDia implements Serializable{
 	private int dia[];
 	private ArrayList<Visita> visitas;
 	private int cantidad;
-	private HashMap<String, Integer> cantidadHora;
+	private HashMap<String, Short> cantidadHora;
 	
 	public VisitasDia(int dia, int mes) {
 		this.dia = new int[] {dia,mes};
 		visitas=new ArrayList<Visita>();
 		cantidad=0;
-		cantidadHora=new HashMap<String, Integer>();
+		cantidadHora=new HashMap<String, Short>();
 	}
 	
 	public boolean aniadeVisita(Visita v) {
 		String hora=v.getHora()[0]+":"+v.getHora()[1];
 		if (cantidadHora.containsKey(hora)) {
-			int ctd=cantidadHora.get(hora);
+			Short ctd=cantidadHora.get(hora);
 			if (ctd+v.getCantidad()>50) {
 				System.out.println("Hay mas de 50 personas");
 				return false;
 			}
-			cantidadHora.put(hora, v.getCantidad()+ctd);
+			cantidadHora.put(hora, (short) (v.getCantidad()+ctd));
 		} else {
-			cantidadHora.put(hora, v.getCantidad());
+			cantidadHora.put(hora, (short) v.getCantidad());
 		}
 		cantidad=cantidadHora.get(hora);
 		if (cantidad>50) {
@@ -110,9 +111,9 @@ public class VisitasDia implements Serializable{
 				System.out.println("Hay mas de 50 personas");
 				return false;
 			}
-			cantidadHora.put(horas[0]+":"+horas[1], v.getCantidad()+val3);
+			cantidadHora.put(horas[0]+":"+horas[1], (short) (v.getCantidad()+val3));
 		} else {
-			cantidadHora.put(horas[0]+":"+horas[1], v.getCantidad());
+			cantidadHora.put(horas[0]+":"+horas[1], (short) v.getCantidad());
 		}
 		v.setHora(horas);
 		return true;
@@ -129,7 +130,7 @@ public class VisitasDia implements Serializable{
 				System.out.println("Hay mas de 50 personas");
 				return false;
 			}
-			cantidadHora.put(v.getHora()[0]+":"+v.getHora()[1], v.getCantidad()+ctd);
+			cantidadHora.put(v.getHora()[0]+":"+v.getHora()[1], (short) (v.getCantidad()+ctd));
 		}
 		cantidad=cantidadHora.get(v.getHora()[0]+":"+v.getHora()[1]);
 		v.setCantidad(ctd);
@@ -160,7 +161,7 @@ public class VisitasDia implements Serializable{
 				System.out.println("Hay mas de 50 personas");
 				return false;
 			}
-			cantidadHora.put(horas[0]+":"+horas[1], v.getCantidad()+ctd);
+			cantidadHora.put(horas[0]+":"+horas[1], (short) (v.getCantidad()+ctd));
 		}
 		cantidad=cantidadHora.get(horas[0]+":"+horas[1]);
 		v.setCantidad(ctd);
@@ -257,23 +258,32 @@ public class VisitasDia implements Serializable{
 		Date d=new Date();
 		int horaActual=d.getHours();
 		int minutosActual=d.getMinutes();
-		Iterator<String> it= cantidadHora.keySet().iterator();
+		DataOutputStream dos=new DataOutputStream(new FileOutputStream("visitasPasadas_"+horaActual+"_"+minutosActual+".bin"));
+		Short cantidadPersonas=0;
+		Iterator<Visita> it= visitas.iterator();
 		while (it.hasNext()) {
-			String hora=it.next();
-			String[] separado=hora.split(":");
-			int hora1=Integer.parseInt(separado[0]);
-			int minutos1=Integer.parseInt(separado[1]);
+			Visita v=it.next();
+			int hora1=v.getHora()[0];
+			int minutos1=v.getHora()[1];
 			if (horaActual>=hora1) {
 				if (minutosActual>minutos1) {
-					cantidadHora.remove(hora);
+					cantidadPersonas=(short) (v.getCantidad());
+					System.out.println(cantidadPersonas);
+					dos.writeShort(cantidadPersonas);
+					it.remove();
 					cantidad++;
 				}
 			}
 		}
-		FileOutputStream fos=new FileOutputStream(new File("visitasPasadas_"+horaActual+"_"+minutosActual+".bin"));
-		fos.write(null);
-		fos.close();
+		dos.close();
 		return cantidad;
+	}
+	
+	public boolean chequeo() throws IOException {
+		if (borrarVisitasPasadas()>0) {
+			return false;
+		}
+		return true;
 	}
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -295,6 +305,7 @@ public class VisitasDia implements Serializable{
 		vd1.crearInforme();
 		System.out.println(vd1.tiempoVisitaMasCercano(11, 00));
 		System.out.println(vd1.borrarVisitasPasadas());
+		System.out.println(vd1.chequeo());
 	}
 	
 }
