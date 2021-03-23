@@ -2,6 +2,10 @@ package e1;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,26 +17,25 @@ public class EJ1 {
 	public static void main(String[] args) throws IOException {
 
 		int resp=0;
-		FileWriter fw=new FileWriter("nums.bin");
+		DataOutputStream dos=new DataOutputStream(new FileOutputStream("nums.bin"));
 		do {
 			System.out.println("Introduce numeros");
 			resp=Consola.leeInt();
 			if (resp!=0) {
-				fw.write(String.valueOf(resp));
+				dos.writeInt(resp);
 			}
 		} while (resp!=0);
-		fw.close();
+		dos.close();
 		
-		FileReader fr=new FileReader("nums.bin");
+		DataInputStream dis=new DataInputStream(new FileInputStream("nums.bin"));
 		BufferedWriter bw=new BufferedWriter(new FileWriter("nums.txt"));
-		int num=fr.read();
-		while (num>0) {
-			bw.write(num);
+		while (dis.available()>0) {
+			int num=dis.readInt();
+			bw.write(String.valueOf(num));
 			bw.newLine();
-			num=fr.read();
 		}
 		bw.close();
-		fr.close();
+		dis.close();
 	}
 
 }
