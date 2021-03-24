@@ -24,11 +24,11 @@ public class VisitasDia implements Serializable{
 
 	private int dia[];
 	private ArrayList<Visita> visitas;
-	private int cantidad;
-	private HashMap<String, Short> cantidadHora;
+	private static int cantidad;
+	private static HashMap<String, Short> cantidadHora;
 	
-	public VisitasDia(int dia, int mes) {
-		this.dia = new int[] {dia,mes};
+	public VisitasDia(int[] dia) {
+		this.dia = dia;
 		visitas=new ArrayList<Visita>();
 		cantidad=0;
 		cantidadHora=new HashMap<String, Short>();
@@ -69,7 +69,6 @@ public class VisitasDia implements Serializable{
 	public void guardaAFichero(String fichero) throws IOException {
 		ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream(fichero));
 		oos.writeObject(visitas);
-		oos.writeObject(null);
 		oos.close();
 	}
 	
@@ -84,7 +83,9 @@ public class VisitasDia implements Serializable{
 		ObjectInputStream ois=new ObjectInputStream(new FileInputStream(fichero));
 		ArrayList<Visita> arr=(ArrayList<Visita>) ois.readObject();
 		for (Visita v : arr) {
-			System.out.println(v);
+			if (v.getCantidad()<=50) {
+				System.out.println(v);
+			}
 		}
 		ois.close();
 	}
@@ -99,7 +100,7 @@ public class VisitasDia implements Serializable{
 			return true;
 		}
 		String h=horas[0]+":"+horas[1];
-		if (!Visita.horaBuena(hora, minutos)) {
+		if (!VisitasDia.horaBuena(horas)) {
 			System.out.println("Hora erronea");
 			return false;
 		}
@@ -147,7 +148,7 @@ public class VisitasDia implements Serializable{
 			return true;
 		}
 		String h=horas[0]+":"+horas[1];
-		if (!Visita.horaBuena(hora, minutos)) {
+		if (!VisitasDia.horaBuena(horas)) {
 			System.out.println("Hora erronea");
 			return false;
 		}
@@ -170,7 +171,7 @@ public class VisitasDia implements Serializable{
 	}
 	
 	public boolean actualizaVisita(String nombre) throws IOException {
-		Visita v=new Visita(nombre, 0, 0, 0);
+		Visita v=new Visita(nombre, 0, new int[]{0,0});
 		if (visitas.contains(v)) {
 			int pos=visitas.indexOf(v);
 			v=visitas.get(pos);
@@ -229,27 +230,25 @@ public class VisitasDia implements Serializable{
 	public String tiempoVisitaMasCercano(int hora, int minutos) throws IOException {
 		HashMap<String, Integer> libres=mapaLibres();
 		Iterator<String> it=libres.keySet().iterator();
-		int minHora=Integer.MAX_VALUE, minMinutos=Integer.MAX_VALUE, laHora=0, losMinutos=0;
+		int minMinutos=Integer.MAX_VALUE, laHora=0, losMinutos=0, minHora=hora*60+minutos;
 		while (it.hasNext()) {
 			String horas=it.next();
-			int cpHora=hora;
 			if (libres.get(horas)>0) {
 				String separado[]=horas.split(":");
-				int hor=Integer.parseInt(separado[0]);
-				int min=Integer.parseInt(separado[1]);
-				if (hor-cpHora<0) {
-					cpHora--;
-				}
-				if (Math.abs(cpHora-hor)<=minHora) {
-					minHora=Math.abs(cpHora-hor);
-					if (Math.abs(minutos-min)<=minMinutos) {
-						minMinutos=Math.abs(minutos-min);
-						losMinutos=min;
-						laHora=hor;
-					}
+				int horVisita=Integer.parseInt(separado[0]);
+				int minVisita=Integer.parseInt(separado[1]);
+				int totalVisita=horVisita*60+minVisita;
+				if (Math.abs(totalVisita-minHora)<=minMinutos) {
+					minMinutos=Math.abs(totalVisita-minHora);
+					losMinutos=totalVisita;
 				}
 			}
 		}
+		if (losMinutos==0) {
+			return null;
+		}
+		laHora=losMinutos/60;
+		losMinutos=losMinutos%60;
 		return laHora+":"+losMinutos;
 	}
 	
@@ -258,6 +257,7 @@ public class VisitasDia implements Serializable{
 		Date d=new Date();
 		int horaActual=d.getHours();
 		int minutosActual=d.getMinutes();
+		int minutosActuales=horaActual*60+minutosActual;
 		DataOutputStream dos=new DataOutputStream(new FileOutputStream("visitasPasadas_"+horaActual+"_"+minutosActual+".bin"));
 		Short cantidadPersonas=0;
 		Iterator<Visita> it= visitas.iterator();
@@ -265,14 +265,13 @@ public class VisitasDia implements Serializable{
 			Visita v=it.next();
 			int hora1=v.getHora()[0];
 			int minutos1=v.getHora()[1];
-			if (horaActual>=hora1) {
-				if (minutosActual>minutos1) {
-					cantidadPersonas=(short) (v.getCantidad());
-					System.out.println(cantidadPersonas);
-					dos.writeShort(cantidadPersonas);
-					it.remove();
-					cantidad++;
-				}
+			int minutosTotal1=hora1*60+minutos1;
+			if (minutosActuales>=minutosTotal1) {
+				cantidadPersonas=(short) (v.getCantidad());
+				System.out.println(cantidadPersonas);
+				dos.writeShort(cantidadPersonas);
+				it.remove();
+				cantidad++;
 			}
 		}
 		dos.close();
@@ -280,19 +279,50 @@ public class VisitasDia implements Serializable{
 	}
 	
 	public boolean chequeo() throws IOException {
-		if (borrarVisitasPasadas()>0) {
-			return false;
+		Date d=new Date();
+		int horaActual=d.getHours();
+		int minutosActual=d.getMinutes();
+		int minutosActuales=horaActual*60+minutosActual;
+		DataOutputStream dos=new DataOutputStream(new FileOutputStream("visitasPasadas_"+horaActual+"_"+minutosActual+".bin"));
+		Iterator<Visita> it= visitas.iterator();
+		while (it.hasNext()) {
+			Visita v=it.next();
+			int hora1=v.getHora()[0];
+			int minutos1=v.getHora()[1];
+			int minutosTotal1=hora1*60+minutos1;
+			if (minutosActuales>=minutosTotal1) {
+				dos.close();
+				return false;
+			}
 		}
+		dos.close();
 		return true;
 	}
 	
+	public static boolean horaBuena(int hora[]) throws IOException {
+		BufferedReader br=new BufferedReader(new FileReader("tiempos_visita.txt"));
+		String linea=br.readLine();
+		while (linea!=null) {
+			String separado[]=linea.split("\t");
+			int horaBuena=Integer.parseInt(separado[0]);
+			int minutosBuena=Integer.parseInt(separado[1]);
+			if (horaBuena==hora[0] && minutosBuena==hora[1]) {
+				br.close();
+				return true;
+			}
+			linea=br.readLine();
+		}
+		br.close();
+		return false;
+	}
+	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		VisitasDia vd1=new VisitasDia(1,1);
-		VisitasDia vd2=new VisitasDia(2,1);
-		Visita v1=new Visita("Juan",2,9,30);
-		Visita v2=new Visita("Carlos",47,9,30);
-		Visita v3=new Visita("Almudena",40,11,20);
-		Visita v4=new Visita("Jacinto",10,11,20);
+		VisitasDia vd1=new VisitasDia(new int[] {1,1});
+		VisitasDia vd2=new VisitasDia(new int[] {2,1});
+		Visita v1=new Visita("Juan",2,new int[] {9,00});
+		Visita v2=new Visita("Carlos",47,new int[] {9,30});
+		Visita v3=new Visita("Almudena",39,new int[] {11,20});
+		Visita v4=new Visita("Jacinto",10,new int[] {11,20});
 		vd1.aniadeVisita(v1);
 		vd1.aniadeVisita(v2);
 		vd1.aniadeVisita(v3);

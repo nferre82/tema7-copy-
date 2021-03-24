@@ -42,9 +42,17 @@ public class GestionAgenda {
 		return false;
 	}
 	
+	public boolean telefonoEnLinea(String linea, String nombre) {
+		String[] persona=linea.split("\t");
+		if (persona[1].equals(nombre)) {
+			return true;
+		}
+		return false;
+	}
+	
 	public Persona transforma(String linea) {
 		String[] persona=linea.split("\t");
-		Persona p=new Persona(persona[2], persona[0], persona[3], persona[1]);
+		Persona p=new Persona(persona[2], persona[0], persona[3], Integer.parseInt(persona[1]));
 		return p;
 	}
 	
@@ -53,6 +61,21 @@ public class GestionAgenda {
 		String linea=br.readLine();
 		while (linea!=null) {
 			if (nombreEnLinea(linea, nombre)) {
+				br.close();
+				return transforma(linea);
+			}
+			linea=br.readLine();
+		}
+		br.close();
+		return null;
+	}
+	
+	public Persona buscarTelefono(String nombre) throws IOException {
+		BufferedReader br=new BufferedReader(new FileReader(nomFich));
+		String linea=br.readLine();
+		while (linea!=null) {
+			if (telefonoEnLinea(linea, nombre)) {
+				br.close();
 				return transforma(linea);
 			}
 			linea=br.readLine();
@@ -62,7 +85,7 @@ public class GestionAgenda {
 	}
 	
 	public void aniadePersonaChecked(Persona persona) throws IOException {
-		if (buscarPersona(persona.getNombre())==null) {
+		if (buscarPersona(persona.getNombre())==null && buscarTelefono(persona.getTelefono())==null) {
 			aniadePersona(persona);
 		}
 	}
@@ -102,28 +125,21 @@ public class GestionAgenda {
 				cant.put(edad1, cantidad);
 				if (cantidad>max) {
 					max=cantidad;
+					edad=edad1;
 				}
 			} else {
 				cant.put(edad1, 1);
 			}
-			cantidad=0;
 			linea=br.readLine();
 		}
 		br.close();
-		Iterator<Integer> it=cant.keySet().iterator();
-		while (it.hasNext()) {
-			int num=it.next();
-			if (cant.get(num)==max) {
-				edad=num;
-			}
-		}
 		return edad;
 	}
 	
 	public static void main(String[] args) throws IOException {
 		GestionAgenda g=new GestionAgenda("personas.txt");
 		g.ver();
-		Persona p=new Persona("Javi", "661685247", "Madrid", "40");
+		Persona p=new Persona("Javi", "661685247", "Madrid", 40);
 		System.out.println();
 		g.aniadePersona(p);
 		g.aniadePersona(p);

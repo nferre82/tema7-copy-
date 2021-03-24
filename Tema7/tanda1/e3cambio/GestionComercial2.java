@@ -40,6 +40,7 @@ public class GestionComercial2 {
 		while (it.hasNext()) {
 			Comercial com=it.next();
 			if (com.getNombre().equals(nomComer)) {
+				ois.close();
 				return com;
 			}
 		}
@@ -77,7 +78,7 @@ public class GestionComercial2 {
 		guardaComerciales(arr);
 	}
 	
-	public void visualizarMoviles(String nomfichero) throws IOException, ClassNotFoundException {
+	public static void visualizarMoviles(String nomfichero) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois=new ObjectInputStream(new FileInputStream(nomfichero));
 		TelefonoMovil c=(TelefonoMovil) ois.readObject();
 		while (c!=null) {

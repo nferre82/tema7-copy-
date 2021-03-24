@@ -6,12 +6,18 @@ public class Comercial implements Serializable{
 
 	private String nombre;
 	private int salario;
-	private TelefonoMovil movil;
+	private TelefonoMovil movil=null;
 	
 	public Comercial(String nombre, int salario, TelefonoMovil movil) {
 		this.nombre = nombre;
 		this.salario = salario;
 		this.movil = movil;
+	}
+
+	public Comercial(String nombre, int salario) {
+		super();
+		this.nombre = nombre;
+		this.salario = salario;
 	}
 
 	public void ver() {

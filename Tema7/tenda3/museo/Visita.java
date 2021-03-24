@@ -12,11 +12,11 @@ public class Visita implements Serializable{
 	private int hora[];//[0]hora,[1]minutos
 	
 	
-	public Visita(String nombre, int cantidad, int hora, int minutos) throws IOException {
+	public Visita(String nombre, int cantidad, int hora[]) throws IOException {
 		this.nombre = nombre;
 		this.cantidad = cantidad;
-		if (horaBuena(hora, minutos)) {
-			this.hora = new int[] {hora, minutos};
+		if (VisitasDia.horaBuena(hora)) {
+			this.hora = hora;
 		} else {
 			primeraHora();
 		}
@@ -30,23 +30,6 @@ public class Visita implements Serializable{
 		int minutosBuena=Integer.parseInt(separado[1]);
 		this.hora = new int[] {horaBuena, minutosBuena};
 		br.close();
-	}
-	
-	public static boolean horaBuena(int hora, int minutos) throws IOException {
-		BufferedReader br=new BufferedReader(new FileReader("tiempos_visita.txt"));
-		String linea=br.readLine();
-		while (linea!=null) {
-			String separado[]=linea.split("\t");
-			int horaBuena=Integer.parseInt(separado[0]);
-			int minutosBuena=Integer.parseInt(separado[1]);
-			if (horaBuena==hora && minutosBuena==minutos) {
-				br.close();
-				return true;
-			}
-			linea=br.readLine();
-		}
-		br.close();
-		return false;
 	}
 	
 	public boolean horaMax50(int horas[]) {
@@ -69,8 +52,8 @@ public class Visita implements Serializable{
 	}
 
 	public void setHora(int[] hora) throws IOException {
-		if (horaBuena(hora[0], hora[1])) {
-			this.hora = new int[] {hora[0], hora[1]};
+		if (VisitasDia.horaBuena(hora)) {
+			this.hora = hora;
 		} else {
 			primeraHora();
 		}

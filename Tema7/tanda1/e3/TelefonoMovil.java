@@ -4,9 +4,10 @@ import java.io.Serializable;
 
 public class TelefonoMovil implements Serializable{
 
-	private int numero, saldo;
+	private int saldo;
+	private String numero;
 
-	public TelefonoMovil(int numero, int saldo) {
+	public TelefonoMovil(String numero, int saldo) {
 		super();
 		this.numero = numero;
 		this.saldo = saldo;

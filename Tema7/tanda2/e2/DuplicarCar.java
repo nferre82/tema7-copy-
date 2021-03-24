@@ -1,5 +1,6 @@
 package e2;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class DuplicarCar extends DuplicadorDeArchivos{
 		if (getNombre().equals(destino)) {
 			return false;
 		}
-		if (getNombre().isEmpty()) {
+		if (!new File(getNombre()).exists()) {
 			return false;
 		}
 		FileReader fr=new FileReader(getNombre());

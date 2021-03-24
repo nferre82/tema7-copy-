@@ -1,7 +1,6 @@
 package e2;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,15 +17,16 @@ public class DuplicadorValidado extends DuplicadorDeArchivos{
 		if (getNombre().equals(destino)) {
 			return false;
 		}
-		if (getNombre().isEmpty()) {
+		if (!new File(getNombre()).exists()) {
 			return false;
 		}
-		char[] ignorar=new char[] {'a','b'};
+		final char[] ignorar=new char[] {'a','b'};
 		FileReader fr=new FileReader(getNombre());
 		FileWriter fw=new FileWriter(destino);
 		int car=fr.read();
-		boolean ignora=false;
+		boolean ignora;
 		while (car>0) {
+			ignora=false;
 			for (int i = 0; i < ignorar.length; i++) {
 				if (ignorar[i]==car) {
 					ignora=true;
@@ -36,7 +36,6 @@ public class DuplicadorValidado extends DuplicadorDeArchivos{
 				fw.write(car);
 			}
 			car=fr.read();
-			ignora=false;
 		}
 		fw.close();
 		fr.close();

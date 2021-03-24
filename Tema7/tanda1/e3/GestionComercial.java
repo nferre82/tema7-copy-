@@ -42,6 +42,7 @@ public class GestionComercial {
 		Comercial c=(Comercial) ois.readObject();
 		while (c!=null) {
 			if (c.getNombre().equals(nomComer)) {
+				ois.close();
 				return c;
 			}
 			c=(Comercial) ois.readObject();
@@ -92,11 +93,11 @@ public class GestionComercial {
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		
-		Comercial c1=new Comercial("Juan", 1000,new TelefonoMovil(666666666, 10));
-		Comercial c2=new Comercial("Ana", 2000,new TelefonoMovil(677777777, 20));
-		Comercial c3=new Comercial("Jon", 4000,new TelefonoMovil(677837777, 200));
-		Comercial c4=new Comercial("Alberto", 200,new TelefonoMovil(683877777, 2000));
-		Comercial c5=new Comercial("Javi", 20,new TelefonoMovil(677774377, 20));
+		Comercial c1=new Comercial("Juan", 1000,new TelefonoMovil("666666666", 10));
+		Comercial c2=new Comercial("Ana", 2000,new TelefonoMovil("677777777", 20));
+		Comercial c3=new Comercial("Jon", 4000,new TelefonoMovil("677837777", 200));
+		Comercial c4=new Comercial("Alberto", 200,new TelefonoMovil("683877777", 2000));
+		Comercial c5=new Comercial("Javi", 20,new TelefonoMovil("677774377", 20));
 		ArrayList<Comercial> a1=new ArrayList<Comercial>();
 		a1.add(c1);
 		a1.add(c2);
@@ -107,15 +108,17 @@ public class GestionComercial {
 		g1.guardaComerciales(a1);
 		g1.verComerciales();
 		System.out.println();
-		if (g1.buscaComercial("Javi")!=null) {
-			g1.buscaComercial("Javi").ver();
+		Comercial ca1=g1.buscaComercial("Javi");
+		if (ca1!=null) {
+			ca1.ver();
 		}else {
-			System.out.println(g1.buscaComercial("Javi"));
+			System.out.println(ca1);
 		}
-		if (g1.buscaComercial("Lorena")!=null) {
-			g1.buscaComercial("Lorena").ver();
+		Comercial ca2=g1.buscaComercial("Lorena");
+		if (ca2!=null) {
+			ca2.ver();
 		} else {
-			System.out.println(g1.buscaComercial("Lorena"));
+			System.out.println(ca2);
 		}
 		System.out.println();
 		g1.generarFichMoviles("moviles.bin");
